@@ -13,11 +13,24 @@ CREATE TABLE "posts" (
      "user" varchar NOT NULL,
      "title" varchar NOT NULL,
      "content" varchar NOT NULL,
+     "subreddit" varchar NOT NULL,
      "created_at" timestamptz NOT NULL DEFAULT (now()),
      "upvotes" bigint NOT NULL DEFAULT 0
 );
 
+CREATE TABLE "subreddits" (
+    "name" varchar UNIQUE PRIMARY KEY,
+    "moderator" varchar NOT NULL,
+    "followers" bigint NOT NULL DEFAULT 0,
+    "description" varchar,
+    "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
 ALTER TABLE "posts" ADD FOREIGN KEY ("user") REFERENCES "users" ("username");
+
+ALTER TABLE "posts" ADD FOREIGN KEY ("subreddit") REFERENCES "subreddits" ("name");
+
+ALTER TABLE "subreddits" ADD FOREIGN KEY ("moderator") REFERENCES "users" ("username");
 
 CREATE INDEX ON "users" ("username");
 

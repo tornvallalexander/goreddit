@@ -13,7 +13,7 @@ func createRandomSubreddit(t *testing.T) Subreddit {
 	require.NotEmpty(t, user)
 
 	arg := CreateSubredditParams{
-		Name:      faker.Name(),
+		Name:      faker.Username(),
 		Moderator: user.Username,
 		Description: sql.NullString{
 			String: faker.Paragraph(),

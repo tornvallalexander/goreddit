@@ -9,13 +9,17 @@ import (
 )
 
 func createRandomPost(t *testing.T) Post {
+	subreddit := createRandomSubreddit(t)
+	require.NotEmpty(t, subreddit)
+
 	user := createRandomUser(t)
 	require.NotEmpty(t, user)
 
 	arg := CreatePostParams{
-		User:    user.Username,
-		Title:   faker.Sentence(),
-		Content: faker.Paragraph(),
+		User:      user.Username,
+		Title:     faker.Sentence(),
+		Content:   faker.Paragraph(),
+		Subreddit: subreddit.Name,
 	}
 
 	post, err := testQueries.CreatePost(context.Background(), arg)
@@ -24,6 +28,31 @@ func createRandomPost(t *testing.T) Post {
 	require.Equal(t, arg.User, post.User)
 	require.Equal(t, arg.Title, post.Title)
 	require.Equal(t, arg.Content, post.Content)
+	require.Equal(t, arg.Subreddit, post.Subreddit)
+
+	require.NotEmpty(t, post.ID)
+
+	return post
+}
+
+func createSubredditPost(t *testing.T, subreddit string) Post {
+	user := createRandomUser(t)
+	require.NotEmpty(t, user)
+
+	arg := CreatePostParams{
+		User:      user.Username,
+		Title:     faker.Sentence(),
+		Content:   faker.Paragraph(),
+		Subreddit: subreddit,
+	}
+
+	post, err := testQueries.CreatePost(context.Background(), arg)
+	require.NoError(t, err)
+
+	require.Equal(t, arg.User, post.User)
+	require.Equal(t, arg.Title, post.Title)
+	require.Equal(t, arg.Content, post.Content)
+	require.Equal(t, arg.Subreddit, post.Subreddit)
 
 	require.NotEmpty(t, post.ID)
 
@@ -45,6 +74,30 @@ func TestGetPost(t *testing.T) {
 	require.Equal(t, post1.Content, post2.Content)
 	require.Equal(t, post1.CreatedAt, post2.CreatedAt)
 	require.Equal(t, post1.Upvotes, post2.Upvotes)
+}
+
+func TestListPosts(t *testing.T) {
+	subreddit := createRandomSubreddit(t)
+	require.NotEmpty(t, subreddit)
+
+	var lastPost Post
+	for i := 0; i < 5; i++ {
+		lastPost = createSubredditPost(t, subreddit.Name)
+	}
+
+	arg := ListPostsParams{
+		Subreddit: lastPost.Subreddit,
+		Limit:     5,
+	}
+
+	posts, err := testQueries.ListPosts(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, posts)
+
+	for _, post := range posts {
+		require.NotEmpty(t, post)
+		require.Equal(t, subreddit.Name, post.Subreddit)
+	}
 }
 
 func TestDeletePost(t *testing.T) {

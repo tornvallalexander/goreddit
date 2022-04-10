@@ -11,26 +11,34 @@ const createPost = `-- name: CreatePost :one
 INSERT INTO posts (
     "user",
     title,
-    content
+    content,
+    "subreddit"
 ) VALUES (
-    $1, $2, $3
-) RETURNING id, "user", title, content, created_at, upvotes
+    $1, $2, $3, $4
+) RETURNING id, "user", title, content, subreddit, created_at, upvotes
 `
 
 type CreatePostParams struct {
-	User    string `json:"user"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	User      string `json:"user"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Subreddit string `json:"subreddit"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createPost, arg.User, arg.Title, arg.Content)
+	row := q.db.QueryRowContext(ctx, createPost,
+		arg.User,
+		arg.Title,
+		arg.Content,
+		arg.Subreddit,
+	)
 	var i Post
 	err := row.Scan(
 		&i.ID,
 		&i.User,
 		&i.Title,
 		&i.Content,
+		&i.Subreddit,
 		&i.CreatedAt,
 		&i.Upvotes,
 	)
@@ -48,7 +56,7 @@ func (q *Queries) DeletePost(ctx context.Context, id int64) error {
 }
 
 const getPost = `-- name: GetPost :one
-SELECT id, "user", title, content, created_at, upvotes FROM posts
+SELECT id, "user", title, content, subreddit, created_at, upvotes FROM posts
 WHERE id = $1
 LIMIT 1
 `
@@ -61,6 +69,7 @@ func (q *Queries) GetPost(ctx context.Context, id int64) (Post, error) {
 		&i.User,
 		&i.Title,
 		&i.Content,
+		&i.Subreddit,
 		&i.CreatedAt,
 		&i.Upvotes,
 	)
@@ -68,13 +77,19 @@ func (q *Queries) GetPost(ctx context.Context, id int64) (Post, error) {
 }
 
 const listPosts = `-- name: ListPosts :many
-SELECT id, "user", title, content, created_at, upvotes FROM posts
+SELECT id, "user", title, content, subreddit, created_at, upvotes FROM posts
+WHERE subreddit = $1
 ORDER BY id
-LIMIT $1
+LIMIT $2
 `
 
-func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, listPosts, limit)
+type ListPostsParams struct {
+	Subreddit string `json:"subreddit"`
+	Limit     int32  `json:"limit"`
+}
+
+func (q *Queries) ListPosts(ctx context.Context, arg ListPostsParams) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, listPosts, arg.Subreddit, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +102,7 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 			&i.User,
 			&i.Title,
 			&i.Content,
+			&i.Subreddit,
 			&i.CreatedAt,
 			&i.Upvotes,
 		); err != nil {
@@ -107,7 +123,7 @@ const updatePost = `-- name: UpdatePost :one
 UPDATE posts
 SET title = $1, content = $2
 WHERE id = $3
-RETURNING id, "user", title, content, created_at, upvotes
+RETURNING id, "user", title, content, subreddit, created_at, upvotes
 `
 
 type UpdatePostParams struct {
@@ -124,6 +140,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.User,
 		&i.Title,
 		&i.Content,
+		&i.Subreddit,
 		&i.CreatedAt,
 		&i.Upvotes,
 	)

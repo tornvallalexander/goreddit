@@ -2,9 +2,10 @@
 INSERT INTO posts (
     "user",
     title,
-    content
+    content,
+    "subreddit"
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetPost :one
@@ -14,8 +15,9 @@ LIMIT 1;
 
 -- name: ListPosts :many
 SELECT * FROM posts
+WHERE subreddit = $1
 ORDER BY id
-LIMIT $1;
+LIMIT $2;
 
 -- name: DeletePost :exec
 DELETE FROM posts

@@ -12,6 +12,7 @@ type Post struct {
 	User      string    `json:"user"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
+	Subreddit string    `json:"subreddit"`
 	CreatedAt time.Time `json:"created_at"`
 	Upvotes   int64     `json:"upvotes"`
 }

@@ -25,6 +25,7 @@ Table posts as R {
   user varchar [ref: > U.username, not null]
   title varchar [not null]
   content varchar [not null]
+  subreddit varchar [ref: > S.name, not null]
   created_at timestamptz [not null, default: `now()`]
   upvotes bigint [not null, default: 0]
 
