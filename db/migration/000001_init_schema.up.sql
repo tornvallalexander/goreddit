@@ -9,7 +9,7 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "posts" (
-     "id" bigint PRIMARY KEY,
+     "id" bigserial PRIMARY KEY,
      "user" varchar NOT NULL,
      "title" varchar NOT NULL,
      "content" varchar NOT NULL,
