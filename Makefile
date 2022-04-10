@@ -1,6 +1,7 @@
 
 CONTAINER_NAME := goreddit-db
 DB_NAME := goreddit
+DB_URL := postgres://root:secret@localhost:5432/$(DB_NAME)?sslmode=disable
 
 
 postgres:
@@ -19,12 +20,18 @@ dropdb:
 	docker exec -it $(CONTAINER_NAME) dropdb --username=root --owner=root $(DB_NAME)
 
 migrateup:
-	migrate -path db/migration -database "postgres://root:secret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgres://root:secret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 sqlc:
 	sqlc generate
 
-.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc
+db_docs:
+	dbdocs build doc/db.dbml
+
+db_schema:
+	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
+
+.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc db_docs db_schema
