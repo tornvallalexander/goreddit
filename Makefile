@@ -28,10 +28,13 @@ migratedown:
 sqlc:
 	sqlc generate
 
+test:
+	go test -v -cover ./...
+
 db_docs:
 	dbdocs build doc/db.dbml
 
 db_schema:
 	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
 
-.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc db_docs db_schema
+.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc test db_docs db_schema
