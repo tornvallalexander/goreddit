@@ -1,8 +1,11 @@
 package api
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	db "github.com/tornvallalexander/goreddit/db/sqlc"
+	"net/http"
 )
 
 // Server serves HTTP requests for GoReddit
@@ -31,9 +34,33 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 	router.GET("/users/:username", server.getUser)
 
+	router.POST("/subreddit", server.createSubreddit)
+	router.GET("/subreddit/:name", server.getSubreddit)
+	router.DELETE("/subreddit/:name", server.deleteSubreddit)
+
+	router.POST("/post", server.createPost)
+	router.GET("/post/:id", server.getPost)
+	router.DELETE("/post/:id", server.deletePost)
+
 	server.router = router
 }
 
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
+}
+
+func checkErr(err error) (status int, res gin.H) {
+	switch err {
+	case sql.ErrNoRows:
+		return http.StatusNotFound, errorResponse(err)
+	}
+
+	if pqErr, ok := err.(*pq.Error); ok {
+		switch pqErr.Code.Name() {
+		case "unique_violation", "foreign_key_violation":
+			return http.StatusForbidden, errorResponse(pqErr)
+		}
+	}
+
+	return http.StatusInternalServerError, errorResponse(err)
 }

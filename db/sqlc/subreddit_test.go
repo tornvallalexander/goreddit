@@ -13,12 +13,9 @@ func createRandomSubreddit(t *testing.T) Subreddit {
 	require.NotEmpty(t, user)
 
 	arg := CreateSubredditParams{
-		Name:      faker.Username(),
-		Moderator: user.Username,
-		Description: sql.NullString{
-			String: faker.Paragraph(),
-			Valid:  true,
-		},
+		Name:        faker.Username(),
+		Moderator:   user.Username,
+		Description: faker.Paragraph(),
 	}
 
 	subreddit, err := testQueries.CreateSubreddit(context.Background(), arg)
@@ -54,11 +51,12 @@ func TestDeleteSubreddit(t *testing.T) {
 	subreddit1 := createRandomSubreddit(t)
 	require.NotEmpty(t, subreddit1)
 
-	err := testQueries.DeleteSubreddit(context.Background(), subreddit1.Name)
+	subreddit2, err := testQueries.DeleteSubreddit(context.Background(), subreddit1.Name)
 	require.NoError(t, err)
+	require.Equal(t, subreddit1.Name, subreddit2.Name)
 
-	subreddit2, err := testQueries.GetSubreddit(context.Background(), subreddit1.Name)
+	subreddit3, err := testQueries.GetSubreddit(context.Background(), subreddit1.Name)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
-	require.Empty(t, subreddit2)
+	require.Empty(t, subreddit3)
 }

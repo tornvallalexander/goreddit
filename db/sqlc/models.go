@@ -3,7 +3,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -18,11 +17,11 @@ type Post struct {
 }
 
 type Subreddit struct {
-	Name        string         `json:"name"`
-	Moderator   string         `json:"moderator"`
-	Followers   int64          `json:"followers"`
-	Description sql.NullString `json:"description"`
-	CreatedAt   time.Time      `json:"created_at"`
+	Name        string    `json:"name"`
+	Moderator   string    `json:"moderator"`
+	Followers   int64     `json:"followers"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type User struct {

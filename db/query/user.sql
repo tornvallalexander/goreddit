@@ -13,6 +13,7 @@ SELECT * FROM users
 WHERE username = $1
 LIMIT 1;
 
--- name: DeleteUser :exec
+-- name: DeleteUser :one
 DELETE FROM users
-WHERE username = $1;
+WHERE username = $1
+RETURNING *;
