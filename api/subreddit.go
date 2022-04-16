@@ -67,11 +67,12 @@ func (server *Server) deleteSubreddit(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.store.DeleteSubreddit(ctx, req.Name); err != nil {
+	subreddit, err := server.store.DeleteSubreddit(ctx, req.Name)
+	if err != nil {
 		status, errRes := checkErr(err)
 		ctx.JSON(status, errRes)
 		return
 	}
 
-	ctx.JSON(http.StatusNoContent, gin.H{})
+	ctx.JSON(http.StatusOK, subreddit)
 }

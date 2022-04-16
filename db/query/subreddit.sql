@@ -12,6 +12,7 @@ SELECT * FROM subreddits
 WHERE name = $1
 LIMIT 1;
 
--- name: DeleteSubreddit :exec
+-- name: DeleteSubreddit :one
 DELETE FROM subreddits
-WHERE name = $1;
+WHERE name = $1
+RETURNING *;

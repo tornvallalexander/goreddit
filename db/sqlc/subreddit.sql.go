@@ -36,14 +36,23 @@ func (q *Queries) CreateSubreddit(ctx context.Context, arg CreateSubredditParams
 	return i, err
 }
 
-const deleteSubreddit = `-- name: DeleteSubreddit :exec
+const deleteSubreddit = `-- name: DeleteSubreddit :one
 DELETE FROM subreddits
 WHERE name = $1
+RETURNING name, moderator, followers, description, created_at
 `
 
-func (q *Queries) DeleteSubreddit(ctx context.Context, name string) error {
-	_, err := q.db.ExecContext(ctx, deleteSubreddit, name)
-	return err
+func (q *Queries) DeleteSubreddit(ctx context.Context, name string) (Subreddit, error) {
+	row := q.db.QueryRowContext(ctx, deleteSubreddit, name)
+	var i Subreddit
+	err := row.Scan(
+		&i.Name,
+		&i.Moderator,
+		&i.Followers,
+		&i.Description,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getSubreddit = `-- name: GetSubreddit :one

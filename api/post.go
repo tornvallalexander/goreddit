@@ -69,11 +69,12 @@ func (server *Server) deletePost(ctx *gin.Context) {
 		return
 	}
 
-	if err := server.store.DeletePost(ctx, req.ID); err != nil {
+	post, err := server.store.DeletePost(ctx, req.ID)
+	if err != nil {
 		status, errRes := checkErr(err)
 		ctx.JSON(status, errRes)
 		return
 	}
 
-	ctx.JSON(http.StatusNoContent, gin.H{})
+	ctx.JSON(http.StatusOK, post)
 }

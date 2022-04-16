@@ -19,9 +19,10 @@ WHERE subreddit = $1
 ORDER BY id
 LIMIT $2;
 
--- name: DeletePost :exec
+-- name: DeletePost :one
 DELETE FROM posts
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
 -- name: UpdatePost :one
 UPDATE posts
