@@ -35,6 +35,8 @@ func (server *Server) setupRouter() {
 	router.GET("/users/:username", server.getUser)
 
 	router.POST("/subreddit", server.createSubreddit)
+	router.GET("/subreddit/:name", server.getSubreddit)
+	router.DELETE("/subreddit/:name", server.deleteSubreddit)
 
 	server.router = router
 }

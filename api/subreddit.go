@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"github.com/gin-gonic/gin"
 	db "github.com/tornvallalexander/goreddit/db/sqlc"
 	"net/http"
@@ -21,12 +20,9 @@ func (server *Server) createSubreddit(ctx *gin.Context) {
 	}
 
 	arg := db.CreateSubredditParams{
-		Name:      req.Name,
-		Moderator: req.Moderator,
-		Description: sql.NullString{
-			String: req.Description,
-			Valid:  true,
-		},
+		Name:        req.Name,
+		Moderator:   req.Moderator,
+		Description: req.Description,
 	}
 
 	subreddit, err := server.store.CreateSubreddit(ctx, arg)
@@ -37,4 +33,45 @@ func (server *Server) createSubreddit(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, subreddit)
+}
+
+type getSubredditRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) getSubreddit(ctx *gin.Context) {
+	var req getSubredditRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	subreddit, err := server.store.GetSubreddit(ctx, req.Name)
+	if err != nil {
+		status, errRes := checkErr(err)
+		ctx.JSON(status, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, subreddit)
+}
+
+type deleteSubredditRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) deleteSubreddit(ctx *gin.Context) {
+	var req deleteSubredditRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if err := server.store.DeleteSubreddit(ctx, req.Name); err != nil {
+		status, errRes := checkErr(err)
+		ctx.JSON(status, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }

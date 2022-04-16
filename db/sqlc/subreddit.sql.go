@@ -5,7 +5,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createSubreddit = `-- name: CreateSubreddit :one
@@ -19,9 +18,9 @@ INSERT INTO subreddits (
 `
 
 type CreateSubredditParams struct {
-	Name        string         `json:"name"`
-	Moderator   string         `json:"moderator"`
-	Description sql.NullString `json:"description"`
+	Name        string `json:"name"`
+	Moderator   string `json:"moderator"`
+	Description string `json:"description"`
 }
 
 func (q *Queries) CreateSubreddit(ctx context.Context, arg CreateSubredditParams) (Subreddit, error) {
