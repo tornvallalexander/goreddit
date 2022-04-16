@@ -22,7 +22,7 @@ CREATE TABLE "subreddits" (
     "name" varchar UNIQUE PRIMARY KEY,
     "moderator" varchar NOT NULL,
     "followers" bigint NOT NULL DEFAULT 0,
-    "description" varchar,
+    "description" varchar NOT NULL DEFAULT '[description]',
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
