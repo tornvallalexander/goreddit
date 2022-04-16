@@ -4,8 +4,9 @@ import "github.com/spf13/viper"
 
 // Config stores all necessary configuration for application
 type Config struct {
-	DBDriver string `mapstructure:"DB_DRIVER"`
-	DBSource string `mapstructure:"DB_SOURCE"`
+	DBDriver      string `mapstructure:"DB_DRIVER"`
+	DBSource      string `mapstructure:"DB_SOURCE"`
+	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
 }
 
 // LoadConfig loads all necessary environment variables

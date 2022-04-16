@@ -37,4 +37,7 @@ db_docs:
 db_schema:
 	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
 
-.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc test db_docs db_schema
+server:
+	go run main.go
+
+.PHONY: postgres startdb stopdb createdb dropdb migrateup migratedown sqlc test db_docs db_schema server
