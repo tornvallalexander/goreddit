@@ -102,14 +102,14 @@ func TestListPosts(t *testing.T) {
 
 func TestDeletePost(t *testing.T) {
 	post1 := createRandomPost(t)
-	err := testQueries.DeletePost(context.Background(), post1.ID)
-
+	post2, err := testQueries.DeletePost(context.Background(), post1.ID)
 	require.NoError(t, err)
+	require.Equal(t, post1.ID, post2.ID)
 
-	post2, err := testQueries.GetPost(context.Background(), post1.ID)
+	post3, err := testQueries.GetPost(context.Background(), post1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
-	require.Empty(t, post2)
+	require.Empty(t, post3)
 }
 
 func TestUpdatePost(t *testing.T) {
