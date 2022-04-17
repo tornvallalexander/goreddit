@@ -34,13 +34,14 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 	router.GET("/users/:username", server.getUser)
 
-	router.POST("/subreddit", server.createSubreddit)
-	router.GET("/subreddit/:name", server.getSubreddit)
-	router.DELETE("/subreddit/:name", server.deleteSubreddit)
+	router.POST("/subreddits", server.createSubreddit)
+	router.GET("/subreddits/:name", server.getSubreddit)
+	router.DELETE("/subreddits/:name", server.deleteSubreddit)
 
-	router.POST("/post", server.createPost)
-	router.GET("/post/:id", server.getPost)
-	router.DELETE("/post/:id", server.deletePost)
+	router.POST("/posts", server.createPost)
+	router.GET("/posts/:id", server.getPost)
+	router.DELETE("/posts/:id", server.deletePost)
+	router.GET("/posts", server.listPosts)
 
 	server.router = router
 }
