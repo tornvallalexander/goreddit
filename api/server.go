@@ -42,6 +42,7 @@ func (server *Server) setupRouter() {
 	router.GET("/posts/:id", server.getPost)
 	router.DELETE("/posts/:id", server.deletePost)
 	router.GET("/posts", server.listPosts)
+	router.PUT("/posts", server.updatePost)
 
 	server.router = router
 }
