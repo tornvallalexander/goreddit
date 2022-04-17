@@ -78,3 +78,59 @@ func (server *Server) deletePost(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, post)
 }
+
+type listPostsRequest struct {
+	Subreddit string `form:"subreddit" binding:"required"`
+	Limit     int32  `form:"limit" binding:"required,min=1,max=10"`
+}
+
+func (server *Server) listPosts(ctx *gin.Context) {
+	var req listPostsRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.ListPostsParams{
+		Subreddit: req.Subreddit,
+		Limit:     req.Limit,
+	}
+
+	posts, err := server.store.ListPosts(ctx, arg)
+	if err != nil {
+		status, errRes := checkErr(err)
+		ctx.JSON(status, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, posts)
+}
+
+type updatePostRequest struct {
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
+	ID      int64  `json:"id" binding:"required"`
+}
+
+func (server *Server) updatePost(ctx *gin.Context) {
+	var req updatePostRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.UpdatePostParams{
+		Title:   req.Title,
+		Content: req.Content,
+		ID:      req.ID,
+	}
+
+	posts, err := server.store.UpdatePost(ctx, arg)
+	if err != nil {
+		status, errRes := checkErr(err)
+		ctx.JSON(status, errRes)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, posts)
+}

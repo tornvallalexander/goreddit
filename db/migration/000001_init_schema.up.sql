@@ -35,5 +35,3 @@ ALTER TABLE "subreddits" ADD FOREIGN KEY ("moderator") REFERENCES "users" ("user
 CREATE INDEX ON "users" ("username");
 
 CREATE INDEX ON "posts" ("user");
-
-CREATE UNIQUE INDEX ON "posts" ("user");
